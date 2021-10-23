@@ -1,6 +1,9 @@
 import express from 'express'
+import db from './plugins/db'
 
 const app = express()
+
+db(app)
 
 app.use((req, res) => {
     res.send({})
