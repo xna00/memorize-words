@@ -1,13 +1,13 @@
-import express from 'express'
-import db from './plugins/db'
+import express from "express";
+import db from "./plugins/db";
+import word from "./routes/word";
 
-const app = express()
+db();
 
-db(app)
+const app = express();
 
-app.use((req, res) => {
-    res.send({})
-})
+word(app);
+
 app.listen(4000, () => {
-    console.log('http://localhost:4000')
-})
+  console.log("http://localhost:4000");
+});
