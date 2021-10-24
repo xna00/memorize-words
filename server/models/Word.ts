@@ -23,14 +23,17 @@ const schema = new mongoose.Schema<Word & Document>({
       form: { type: String },
       chineseExplanation: { type: String },
       englishExplanation: { type: String },
-      examples: {
-        english: { type: String },
-        chinese: { type: String },
-        grammer: { type: String },
-      },
+      tips: [{ type: String }],
+      examples: [
+        {
+          english: { type: String },
+          chinese: { type: String },
+          grammar: { type: String },
+        },
+      ],
+      synonym: [{ type: String }],
     },
   ],
-  synonym: [{ type: String }],
 });
 
 export default mongoose.model("Word", schema);
