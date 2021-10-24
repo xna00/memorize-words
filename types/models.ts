@@ -38,7 +38,8 @@ export type User = {
 export type Vocabulary = {
   name: string;
   users: User[];
-  words: Word[];
+  words: string[];
+  _id: string;
 };
 export type LearnLog = {
   user: User;
