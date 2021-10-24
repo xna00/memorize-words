@@ -37,7 +37,7 @@ export type User = {
 };
 export type Vocabulary = {
   name: string;
-  users: User[];
+  users: string[];
   words: string[];
   _id: string;
 };
