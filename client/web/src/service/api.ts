@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Vocabulary, Word } from "../../../types/models";
+import { Vocabulary, Word } from "../../../../types/models";
 
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");

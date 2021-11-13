@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { getVocabularies, getVocabulary } from "../service/api";
-import type { Vocabulary, Word } from "../../../types/models";
+import type { Vocabulary, Word } from "../../../../types/models";
 import {
   Form,
   Select,
