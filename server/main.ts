@@ -17,6 +17,17 @@ word(app);
 vocabulary(app);
 log(app);
 
+app.use(
+  "/",
+  (req, res, next) => {
+    if (req.path === "/" || req.path === "/index.html") {
+      res.setHeader("Cache-control", "no-cache");
+    }
+    next();
+  },
+  express.static("./client/web/dist")
+);
+
 app.use(errorHandler());
 
 app.listen(4000, () => {
