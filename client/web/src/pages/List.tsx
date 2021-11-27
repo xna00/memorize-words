@@ -227,6 +227,14 @@ export default () => {
           setSelectedVocabulary(value);
         }}
       />
+      <Button
+        onClick={() => {
+          const token = window.prompt("input token");
+          localStorage.setItem("token", token ?? "");
+        }}
+      >
+        login
+      </Button>
       <Form
         form={form}
         layout="inline"
@@ -334,7 +342,11 @@ export default () => {
           }
         }}
       />
-      <Drawer visible={drawVisible} onClose={() => setDrawVisible(false)} width={700}>
+      <Drawer
+        visible={drawVisible}
+        onClose={() => setDrawVisible(false)}
+        width={700}
+      >
         {JSON.stringify(detailWord)}
       </Drawer>
     </div>
