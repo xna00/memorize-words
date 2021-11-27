@@ -17,6 +17,7 @@ export async function getVocabularies() {
 }
 
 export async function getVocabulary(id: string, params: {}) {
+  console.log("pp");
   return (
     await axios.get<{
       total: number;
@@ -25,4 +26,14 @@ export async function getVocabulary(id: string, params: {}) {
       params,
     })
   ).data;
+}
+
+export async function createLog(
+  data: {
+    type: "recongize" | "spell";
+    grade: number;
+    word: string;
+  }[]
+) {
+  return (await axios.post("/api/logs", data)).data;
 }

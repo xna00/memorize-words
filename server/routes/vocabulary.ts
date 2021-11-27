@@ -36,11 +36,25 @@ export default (app: Express) => {
     });
     res.send(v);
   });
+  router.delete("/:vocabulary/:word", async (req, res) => {
+    const { vocabulary, word } = req.params;
+    res.send(
+      await UserWord.findOneAndDelete({
+        word,
+        in: vocabulary,
+      })
+    );
+  });
 
   router.get("/", (req: any, res) => {
+    console.log(req);
+    console.log("hhhh");
     Vocabulary.find({
       users: req.user._id,
-    }).then((r) => res.send(r));
+    }).then((r) => {
+      console.log(r);
+      res.send(r);
+    });
   });
 
   router.get("/:id", async (req: any, res) => {
@@ -52,16 +66,26 @@ export default (app: Express) => {
       pageNum,
       pageSize,
       like,
-      time,
-      inTimeRange,
-      grade,
+      averagrGrade,
+      invertAverageGrade,
       learnCount,
-      isLearnCount,
+      invertLearnCount,
+      firstlyLearnTimeRange,
+      invertFirstlyLearnTimeRange,
+      lastlyLearnTimeRange,
+      invertLastlyLearnTimeRange,
+      recongizeAverageGrade,
+      invertRecongizeAverageGrade,
+      recongizeCount,
+      invertRecongizeCount,
+      spellAverageGrade,
+      invertSpellAverageGrade,
+      spellCount,
+      invertSpellCount,
     } = query;
     pageNum = Number.isInteger(Number(pageNum)) ? Number(pageNum) : 1;
     pageSize = Number.isInteger(Number(pageSize)) ? Number(pageSize) : 10;
     const v = await Vocabulary.findById(id);
-    console.log("vv", v);
     if (!v) {
       res.send({});
       return;
@@ -75,47 +99,61 @@ export default (app: Express) => {
       user,
       in: v,
     };
-    grade &&
-      (tmp.grade = {
-        $gte: grade[0],
-        $lte: grade[1],
-      });
-    if (time) {
-      if (inTimeRange === "") {
-        tmp.$or = [
-          { updatedAt: { $gte: time[1] } },
-          { updatedAt: { $lte: time[0] } },
-        ];
-      } else {
-        tmp.updatedAt = {
-          $gte: time[0],
-          $lte: time[1],
+    const computeRange = (name, range, invert) => {
+      if (range) {
+        tmp[name] = {
+          $gte: range[0],
+          $lte: range[1],
         };
+        if (invert === "true") {
+          tmp[name] = {
+            $not: tmp[name],
+          };
+        }
       }
-    }
-    if (Number.isInteger(parseInt(learnCount))) {
-      const count = parseInt(learnCount);
-      if (isLearnCount !== "") {
-        tmp.learnCount = count;
-      } else {
-        tmp.learnCount = {
-          $ne: count,
-        };
-      }
-    }
+    };
+    computeRange(
+      "firstlyLearnTime",
+      firstlyLearnTimeRange,
+      invertFirstlyLearnTimeRange
+    );
+    computeRange("updatedAt", lastlyLearnTimeRange, invertLastlyLearnTimeRange);
+    recongizeAverageGrade = recongizeAverageGrade?.map(parseFloat);
+    computeRange(
+      "recongizeAverageGrade",
+      recongizeAverageGrade,
+      invertRecongizeAverageGrade
+    );
+
+    recongizeCount = recongizeCount?.map(parseFloat);
+    computeRange("recongizeCount", recongizeCount, invertRecongizeCount);
+    learnCount = learnCount?.map(parseFloat);
+    computeRange("learnCount", learnCount, invertLearnCount);
+    averagrGrade = averagrGrade?.map(parseFloat);
+    computeRange("averageGrade", averagrGrade, invertAverageGrade);
+    spellAverageGrade = spellAverageGrade?.map(parseFloat);
+    computeRange(
+      "spellAverageGrade",
+      spellAverageGrade,
+      invertSpellAverageGrade
+    );
+    spellCount = spellCount?.map(parseFloat);
+    computeRange("spellCount", spellCount, invertSpellCount);
+    console.log(tmp);
+    const total = await UserWord.find(tmp).count();
     const _words = await UserWord.find(tmp)
       .skip(pageSize * (pageNum - 1))
       .limit(pageSize);
-    console.log(_words, "_words");
+    // console.log(_words, "_words");
     const words = await Word.find({
       word: {
         // $in
         $in: _words.map((w) => w.word),
       },
     });
-    console.log(words);
+    // console.log(words);
     res.send({
-      total: words.length,
+      total,
       data: words,
     });
   });
