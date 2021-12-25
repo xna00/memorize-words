@@ -66,7 +66,7 @@ export default (app: Express) => {
       pageNum,
       pageSize,
       like,
-      averagrGrade,
+      averageGrade,
       invertAverageGrade,
       learnCount,
       invertLearnCount,
@@ -129,8 +129,8 @@ export default (app: Express) => {
     computeRange("recongizeCount", recongizeCount, invertRecongizeCount);
     learnCount = learnCount?.map(parseFloat);
     computeRange("learnCount", learnCount, invertLearnCount);
-    averagrGrade = averagrGrade?.map(parseFloat);
-    computeRange("averageGrade", averagrGrade, invertAverageGrade);
+    averageGrade = averageGrade?.map(parseFloat);
+    computeRange("averageGrade", averageGrade, invertAverageGrade);
     spellAverageGrade = spellAverageGrade?.map(parseFloat);
     computeRange(
       "spellAverageGrade",
