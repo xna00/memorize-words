@@ -32,13 +32,18 @@ const Grades = {
   脱口而出: 3,
 };
 
+const vocabularyKey = "lastVocabulary";
+
 export default () => {
   const [vocabularies, setVocabularies] = useState<Vocabulary[]>([]);
   useEffect(() => {
     getVocabularies().then((res) => {
       console.log(res);
       setVocabularies(res);
-      res.length && setSelectedVocabulary(res[0]._id);
+      res.length &&
+        setSelectedVocabulary(
+          localStorage.getItem(vocabularyKey) || res[0]._id
+        );
     });
   }, []);
 
@@ -85,7 +90,7 @@ export default () => {
               ).play();
             }}
           >
-            英{row.phoneticSymbols.uk}
+            英{row.phoneticSymbols?.uk}
           </a>
           ,
           <a
@@ -95,7 +100,7 @@ export default () => {
               ).play();
             }}
           >
-            美{row.phoneticSymbols.us}
+            美{row.phoneticSymbols?.us}
           </a>
         </div>
       ),
@@ -225,6 +230,7 @@ export default () => {
         options={vocabularies.map((v) => ({ label: v.name, value: v._id }))}
         onSelect={(value) => {
           setSelectedVocabulary(value);
+          localStorage.setItem(vocabularyKey, value);
         }}
       />
       <Button
