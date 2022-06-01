@@ -4,7 +4,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
-} from "sequelize";
+} from "@sequelize/core";
 import { sequelize } from "../plugins/db";
 import { Word } from "./Word";
 

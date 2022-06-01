@@ -5,7 +5,7 @@ import {
   CreationOptional,
   InferAttributes,
   InferCreationAttributes,
-} from "sequelize";
+} from "@sequelize/core";
 import { sequelize } from "../plugins/db";
 
 // const sequelize = new Sequelize("mysql://root:asd123@localhost:3306/mydb");

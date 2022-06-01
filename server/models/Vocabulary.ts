@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import {
   Sequelize,
   Model,
@@ -9,7 +8,11 @@ import {
   ModelAttributes,
   Association,
   NonAttribute,
-} from "sequelize";
+  HasManyGetAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyCountAssociationsMixin,
+} from "@sequelize/core";
 import { sequelize } from "../plugins/db";
 import { User, UserWord } from ".";
 import { UserWordModel } from "./UserWord";
@@ -18,7 +21,9 @@ interface Vocabulary {
   id: CreationOptional<number>;
   name: string;
   userId: number;
-  UserWords?: UserWordModel[];
+  userWords?: UserWordModel[];
+  getUserWords: BelongsToManyGetAssociationsMixin<UserWordModel>;
+  countUserWords: BelongsToManyCountAssociationsMixin;
 }
 
 interface VocabularyModel

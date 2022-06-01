@@ -11,10 +11,12 @@ export { User, ProtoWord, Word, Vocabulary, UserWord, VocabularyUserWord };
 ProtoWord.hasMany(Word, {
   foreignKey: "linkTo",
   as: "proto",
+  constraints: false,
 });
 Word.belongsTo(ProtoWord, {
   foreignKey: "linkTo",
   as: "proto",
+  constraints: false,
 });
 
 User.hasMany(UserWord, {

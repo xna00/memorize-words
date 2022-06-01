@@ -1,5 +1,4 @@
 import mongoose, { Document } from "mongoose";
-import bcrypt from "bcrypt";
 
 const schema = new mongoose.Schema<//   {
 //     word: string;

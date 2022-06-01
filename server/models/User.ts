@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import {
   Sequelize,
   Model,
@@ -7,7 +7,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   ModelAttributes,
-} from "sequelize";
+} from "@sequelize/core";
 import { sequelize } from "../plugins/db";
 import { Word } from "./Word";
 import UserWord from "./UserWord";
@@ -41,7 +41,8 @@ const UserModel = sequelize.define<UserModel>("user", {
     allowNull: false,
     set(val) {
       console.log(val);
-      this.setDataValue("password", bcrypt.hashSync(val, 10));
+      typeof val === "string" &&
+        this.setDataValue("password", bcrypt.hashSync(val, 10));
     },
   },
   email: {

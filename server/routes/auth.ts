@@ -22,7 +22,7 @@ export default (app: Express) => {
       },
     });
     assert(user, 422, "用户不存在");
-    const isValid = require("bcrypt").compareSync(password, user.password);
+    const isValid = require("bcryptjs").compareSync(password, user.password);
     assert(isValid, 422, "密码错误");
     const token = jwt.sign({ id: user.id }, app.get("secret"));
     res.send({ token, id: user.id });

@@ -9,7 +9,7 @@ import {
   NonAttribute,
   HasManyGetAssociationsMixin,
   HasOneGetAssociationMixin,
-} from "sequelize";
+} from "@sequelize/core";
 import { sequelize } from "../plugins/db";
 import { ProtoWord } from "./ProtoWord";
 import { Word } from "./Word";

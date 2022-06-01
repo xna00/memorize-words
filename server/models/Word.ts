@@ -5,7 +5,7 @@ import {
   InferCreationAttributes,
   CreationOptional,
   NonAttribute,
-} from "sequelize";
+} from "@sequelize/core";
 import { sequelize } from "../plugins/db";
 import { ProtoWord } from "./ProtoWord";
 
