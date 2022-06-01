@@ -5,6 +5,7 @@ import auth from "./routes/auth";
 import vocabulary from "./routes/vocabulary";
 import word from "./routes/word";
 import log from "./routes/log";
+import userWord from "./routes/userWord";
 
 db();
 
@@ -14,6 +15,7 @@ app.use(express.json({ limit: "25mb" }));
 
 auth(app);
 word(app);
+userWord(app);
 vocabulary(app);
 log(app);
 

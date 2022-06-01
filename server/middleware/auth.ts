@@ -1,4 +1,4 @@
-import User from "../models/User";
+import { User } from "../models";
 import assert from "http-assert";
 import jwt from "jsonwebtoken";
 export default (options?) => {
@@ -11,7 +11,7 @@ export default (options?) => {
     assert(typeof tmp !== "string", 500);
     const { id } = tmp;
     assert(id, 401, "请先登录");
-    req.user = await User.findById(id);
+    req.user = await User.findByPk(id);
     assert(req.user, 401, "请先登录");
     await next();
   };

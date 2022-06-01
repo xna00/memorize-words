@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import {
   Sequelize,
   Model,
@@ -14,35 +13,28 @@ import { sequelize } from "../plugins/db";
 import { User, UserWord } from ".";
 import { UserWordModel } from "./UserWord";
 
-interface Vocabulary {
-  id: CreationOptional<number>;
-  name: string;
-  userId: number;
-  UserWords?: UserWordModel[];
+interface V {
+  vocabularyId: number;
+  userWordId: number;
 }
 
-interface VocabularyModel
-  extends Vocabulary,
+interface VocabularyUserWordModel
+  extends V,
     Model<
-      InferAttributes<VocabularyModel>,
-      InferCreationAttributes<VocabularyModel>
+      InferAttributes<VocabularyUserWordModel>,
+      InferCreationAttributes<VocabularyUserWordModel>
     > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
 }
 
-const M = sequelize.define<VocabularyModel>("vocabulary", {
-  id: {
+const M = sequelize.define<VocabularyUserWordModel>("vocabularyUserWord", {
+  vocabularyId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
   },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  userId: {
+  userWordId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    primaryKey: true,
   },
 });
 

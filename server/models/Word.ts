@@ -1,39 +1,50 @@
-import mongoose, { Document } from "mongoose";
-import type { Word } from "../../types/models";
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+  NonAttribute,
+} from "sequelize";
+import { sequelize } from "../plugins/db";
+import { ProtoWord } from "./ProtoWord";
 
-const schema = new mongoose.Schema<Word & Document>({
-  word: { type: String, unique: true },
-  phoneticSymbols: {
-    uk: { type: String },
-    us: { type: String },
-  },
-  forms: {
-    third: { type: String },
-    done: { type: String },
-    ing: { type: String },
-    past: { type: String },
-    plural: { type: String },
-    noun: { type: String },
-    verb: { type: String },
-    adverb: { type: String },
-    adjective: { type: String },
-  },
-  senses: [
-    {
-      form: { type: String },
-      chineseExplanation: { type: String },
-      englishExplanation: { type: String },
-      tips: [{ type: String }],
-      examples: [
-        {
-          english: { type: String },
-          chinese: { type: String },
-          grammar: { type: String },
-        },
-      ],
-      synonym: [{ type: String }],
+// order of InferAttributes & InferCreationAttributes is important.
+export class Word extends Model<
+  InferAttributes<Word>,
+  InferCreationAttributes<Word>
+> {
+  // 'CreationOptional' is a special type that marks the field as optional
+  // when creating an instance of the model (such as using Model.create()).
+  declare word: string;
+  declare phoneticSymobles?: {
+    us?: string;
+    uk?: string;
+  };
+  declare linkTo: string;
+
+  declare proto?: NonAttribute<ProtoWord>;
+  // other attributes...
+}
+
+Word.init(
+  {
+    word: {
+      type: DataTypes.STRING,
+      primaryKey: true,
     },
-  ],
-});
+    phoneticSymobles: {
+      type: DataTypes.JSONB,
+    },
+    linkTo: {
+      type: DataTypes.STRING,
+    },
+  },
+  {
+    sequelize,
+    tableName: "words",
+    timestamps: false,
+  }
+);
 
-export default mongoose.model("Word", schema);
+Word.sync({ alter: true });

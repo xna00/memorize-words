@@ -1,19 +1,52 @@
-import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
-import type { User } from '../../types/models'
+import {
+  Sequelize,
+  Model,
+  DataTypes,
+  CreationOptional,
+  InferAttributes,
+  InferCreationAttributes,
+  ModelAttributes,
+} from "sequelize";
+import { sequelize } from "../plugins/db";
+import { Word } from "./Word";
+import UserWord from "./UserWord";
 
-const schema = new mongoose.Schema<
-    User & Document
->({
-    username: { type: String, unique: true },
-    email: { type: String },
-    password: {
-        type: String,
-        select: false,
-        set(val: string) {
-            return bcrypt.hashSync(val, 10);
-        },
+interface User {
+  id: CreationOptional<number>;
+  username: string;
+  password: string;
+  email?: string;
+}
+
+interface UserModel
+  extends User,
+    Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
+  // Some fields are optional when calling UserModel.create() or UserModel.build()
+}
+
+const UserModel = sequelize.define<UserModel>("user", {
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    set(val) {
+      console.log(val);
+      this.setDataValue("password", bcrypt.hashSync(val, 10));
     },
+  },
+  email: {
+    type: DataTypes.STRING,
+  },
 });
 
-export default mongoose.model("User", schema);
+export default UserModel;
