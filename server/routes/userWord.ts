@@ -1,10 +1,11 @@
 import express, { Express, Response } from "express";
-import type { Request } from "express";
 import { Word } from "../models/Word";
 import { ProtoWord, User, Vocabulary, VocabularyUserWord } from "../models";
 import auth from "../middleware/auth";
 import UserWord, { UserWordModel } from "../models/UserWord";
+import { Op } from "@sequelize/core";
 import assert from "http-assert";
+import { queryTowhere } from "../tools/query";
 
 export default (app: Express) => {
   console.log(Word);
@@ -13,43 +14,44 @@ export default (app: Express) => {
   type A = { count: number; rows: UserWordModel[] };
   router.get("/", async (req, res: Response<A>) => {
     const user = (req as any).user as User;
-    const { vocabulary, ...page } = req.query as {
+    const { vocabulary, limit, offset, ...rest } = req.query as {
       vocabulary?: string;
       limit?: number;
       offset?: number;
     };
+    console.log(rest, queryTowhere({ ...rest }));
     let resp: A;
-    if (vocabulary) {
-      const w = await Vocabulary.findOne({
-        where: {
-          userId: user.id,
-          id: vocabulary,
-        },
-      });
-      assert(w, 400, "Your vocabulary was not found!");
 
-      console.log(31);
-      const t = await w.getUserWords({
-        ...page,
-        joinTableAttributes: [],
-        attributes: {
-          exclude: ["id", "userId"],
-        },
-      });
-      resp = {
-        count: await w.countUserWords(),
-        rows: t,
-      };
-    } else {
-      resp = await UserWord.findAndCountAll({
+    let ids: number[] | undefined;
+    if (vocabulary) {
+      const t = await Vocabulary.findOne({
         where: {
+          id: vocabulary,
           userId: user.id,
         },
-        attributes: {
-          exclude: ["id", "userId"],
-        },
+        include: UserWord,
       });
+      assert(t, 400, "Your vocabulary was not found!");
+      ids = (t.userWords ?? []).map((w) => w.id);
     }
+
+    resp = await UserWord.findAndCountAll({
+      where: {
+        userId: user.id,
+        id: ids ?? {
+          [Op.gt]: -1,
+        },
+        ...queryTowhere({
+          ...rest,
+        }),
+      },
+      attributes: {
+        exclude: ["id", "userId"],
+      },
+      limit,
+      offset,
+    });
+    // }
     await Promise.all(
       resp.rows.map(async (w) => {
         const word = await w.getWord({
@@ -66,5 +68,19 @@ export default (app: Express) => {
     );
     res.send(resp);
   });
-  app.use("/api/userWord", auth(), router);
+
+  router.get("/:word", async (req, res) => {
+    const user = (req as any).user as User;
+    const { word } = req.params;
+    res.send(
+      await UserWord.findOne({
+        where: {
+          userId: user.id,
+          word: word,
+        },
+      })
+    );
+  });
+
+  app.use("/api/userWords", auth(), router);
 };
