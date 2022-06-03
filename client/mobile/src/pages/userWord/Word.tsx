@@ -3,7 +3,15 @@ import { fetchJSON } from "../../service";
 import { ILearnLog, LearnLogType } from "../../types";
 import { UserWord } from "./UserWord";
 
-export function Word({ word }: { word: UserWord }) {
+export function Word({
+  word,
+  setWord,
+  setDVisible,
+}: {
+  word: UserWord;
+  setWord: (w: string) => void;
+  setDVisible: (v: boolean) => void;
+}) {
   const [userWord, setUserWord] = useState(word);
   const [grade, setGrade] = useState<number>();
   const [visible, setVisible] = useState(false);
@@ -52,6 +60,8 @@ export function Word({ word }: { word: UserWord }) {
               href=""
               onClick={(e) => {
                 e.preventDefault();
+                setWord(userWord.word);
+                setDVisible(true);
               }}
             >
               {userWord.word}

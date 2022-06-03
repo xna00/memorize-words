@@ -1,4 +1,6 @@
 import { useEffect, useState } from "preact/compat";
+import Drawer from "../../components/Drawer";
+import WordDetail from "../../components/WordDetail";
 import { fetchJSON } from "../../service";
 import { stringify } from "../../tools";
 import Filter from "./Filter";
@@ -25,60 +27,100 @@ export default () => {
     count: 0,
     rows: [],
   });
+  const [where, setWhere] = useState({});
+  const [word, setWord] = useState<string>();
+  const [visible, setVisible] = useState(false);
+  const pageCount = Math.ceil(data.count / Number(page.pageSize));
 
-  const fetchUserWords = (query: {}) => {
+  useEffect(() => {
     fetchJSON(
       `/api/userWords?${new URLSearchParams({
-        ...query,
+        ...where,
         ...page,
       }).toString()}`
     ).then((res) => {
       setData(res);
     });
-  };
-
-  useEffect(() => {
-    fetchUserWords({});
-  }, [page]);
+  }, [page, where]);
 
   return (
     <div class="relative">
       <header class="flex">
-        <Filter fetchUserWords={fetchUserWords} />
+        <Filter fetchUserWords={setWhere} />
         <div class="ml-auto">
           total: {data.count} pageSize:{" "}
           <select
             value={page.pageSize}
             onChange={(v) => {
               const limit = (v.target as HTMLSelectElement).value;
-              // setPage({
-              //   ...page,
-              //   limit,
-              // });
+              setPage({
+                ...page,
+                pageSize: limit,
+              });
             }}
           >
             {[10, 20, 30, 50, 100].map((l) => (
               <option value={l}>{l}</option>
             ))}
           </select>
-          pageNum:{" "}
+          pageNum:
+          <button
+            class="w-4"
+            disabled={page.pageNum === "1"}
+            onClick={() => {
+              setPage({
+                ...page,
+                pageNum: (Number(page.pageNum) - 1).toString(),
+              });
+            }}
+          >
+            ↑
+          </button>
           <input
             type="number"
             min={1}
-            max={data.count / Number(page.pageSize) + 1}
+            max={pageCount}
+            step={1}
             value={page.pageNum}
             onChange={(e) => {
               const offset = (e.target as HTMLInputElement).value;
               setPage({ ...page, pageNum: offset });
             }}
           />
+          /{pageCount}
+          <button
+            class="w-4"
+            disabled={page.pageNum === pageCount.toString()}
+            onClick={() => {
+              setPage({
+                ...page,
+                pageNum: (Number(page.pageNum) + 1).toString(),
+              });
+            }}
+          >
+            ↓
+          </button>
         </div>
       </header>
       <ol>
         {data.rows.map((w) => (
-          <Word word={w} key={w.id} />
+          <Word
+            word={w}
+            key={w.id}
+            setWord={setWord}
+            setDVisible={setVisible}
+          />
         ))}
       </ol>
+      <Drawer
+        placement="right"
+        visible={visible}
+        onClose={() => setVisible(false)}
+      >
+        <div class="bg-white w-9/12 overflow-auto">
+          {word && <WordDetail word={word} />}
+        </div>
+      </Drawer>
     </div>
   );
 };

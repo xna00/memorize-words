@@ -1,8 +1,23 @@
-import { useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
+import Drawer from "../../components/Drawer";
 import VocabularySelect from "./VocabularySelect";
 
 export default ({ fetchUserWords }: { fetchUserWords: (q: {}) => void }) => {
   const [visible, setVisible] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    const form = formRef.current;
+    const formDataS = localStorage.getItem("formData");
+    if (form && formDataS) {
+      const formData = JSON.parse(formDataS);
+      Object.entries(formData).forEach(([k, v]) => {
+        const tmp = form.elements.namedItem(k) as any;
+        tmp && (tmp.value = v);
+      });
+    }
+  }, [formRef]);
+
   return (
     <div>
       <button
@@ -12,26 +27,19 @@ export default ({ fetchUserWords }: { fetchUserWords: (q: {}) => void }) => {
       >
         筛选
       </button>
-      <aside
-        class={`w-100vw h-100vh fixed  top-0 transition-transform bg-opacity-80 ${
-          visible ? "bg-gray-200" : "-translate-x-full "
-        }`}
-        onClick={() => {
-          setVisible(false);
-        }}
-      >
+      <Drawer visible={visible} onClose={() => setVisible(false)}>
         <div
-          class="w-9/12 bg-white h-full"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
+          class="w-9/12 h-full bg-white flex flex-col justify-between"
+          onClick={(e) => {}}
         >
           <form
+            ref={formRef}
             onSubmit={(e) => {
               e.preventDefault();
               const formData = Object.fromEntries(
                 new FormData(e.target as HTMLFormElement)
               );
+              localStorage.setItem("formData", JSON.stringify(formData));
               fetchUserWords(formData);
               console.log(formData);
             }}
@@ -46,6 +54,7 @@ export default ({ fetchUserWords }: { fetchUserWords: (q: {}) => void }) => {
               <input
                 type="number"
                 name="recognizeAverageGrade[0]"
+                required
                 min={-0.1}
                 max={3}
                 step={0.1}
@@ -54,6 +63,7 @@ export default ({ fetchUserWords }: { fetchUserWords: (q: {}) => void }) => {
               <input
                 type="number"
                 name="recognizeAverageGrade[1]"
+                required
                 min={0}
                 max={3}
                 step={0.1}
@@ -63,7 +73,23 @@ export default ({ fetchUserWords }: { fetchUserWords: (q: {}) => void }) => {
             <input type="submit" />
           </form>
         </div>
-      </aside>
+      </Drawer>
+      {/* <aside
+        class={`w-100vw h-100vh fixed  top-0 transition-all ease-linear duration-200 bg-black ${
+          visible
+            ? // bg or inset box-shadow
+              "translate-x-0 bg-opacity-60"
+            : "-translate-x-full bg-opacity-0"
+        }`}
+        style={{
+          boxShadow: visible
+            ? "rgb(0 0 0 / 60%) 0 0 0 10000px"
+            : "rgb(0 0 0 / 0%) 0 0 0 10000px",
+        }}
+        onClick={() => {
+          setVisible(false);
+        }}
+      ></aside> */}
     </div>
   );
 };
