@@ -7,6 +7,7 @@ specifiers:
   '@types/http-assert': ^1.5.3
   '@types/jsonwebtoken': ^8.5.5
   '@types/pg': ^8.6.5
+  '@types/qs': ^6.9.7
   bcryptjs: ^2.4.3
   express: ^5.0.0-alpha.8
   http-assert: ^1.5.0
@@ -34,6 +35,7 @@ devDependencies:
   '@types/http-assert': registry.npmmirror.com/@types/http-assert/1.5.3
   '@types/jsonwebtoken': registry.npmmirror.com/@types/jsonwebtoken/8.5.8
   '@types/pg': registry.npmmirror.com/@types/pg/8.6.5
+  '@types/qs': registry.npmmirror.com/@types/qs/6.9.7
   typescript: registry.npmmirror.com/typescript/4.7.2
 
 packages:
