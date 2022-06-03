@@ -43,9 +43,11 @@ LearnLog.belongsTo(UserWord, {
 
 Word.hasMany(UserWord, {
   foreignKey: "word",
+  constraints: false,
 });
 UserWord.belongsTo(Word, {
   foreignKey: "word",
+  constraints: false,
 });
 
 User.hasMany(Vocabulary, {
