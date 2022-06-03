@@ -17,7 +17,8 @@ import { queryTowhere } from "../tools/query";
 export default (app: Express) => {
   console.log(Word);
   const router = express.Router();
-  router.post("/", async (req: any, res) => {
+  router.post("/", async (req, res) => {
+    console.log(req.body);
     const { userWordId, type, grade } = req.body as ILearnLog;
     const user = (req as any).user as User;
     const userWord = await UserWord.findByPk(userWordId);
@@ -32,10 +33,13 @@ export default (app: Express) => {
     });
 
     if (type === LearnLogType.Recognize) {
-      const { recongizeAverageGrade, recongizeCount } = userWord;
-      userWord.recongizeAverageGrade =
+      const {
+        recognizeAverageGrade: recongizeAverageGrade,
+        recognizeCount: recongizeCount,
+      } = userWord;
+      userWord.recognizeAverageGrade =
         (recongizeAverageGrade * recongizeCount + grade) / (recongizeCount + 1);
-      userWord.recongizeCount++;
+      userWord.recognizeCount++;
     } else {
       const { spellAverageGrade, spellCount } = userWord;
       userWord.spellAverageGrade =
@@ -45,8 +49,9 @@ export default (app: Express) => {
     }
 
     const { averageGrade, learnCount } = userWord;
-    userWord.averageGrade = (averageGrade * learnCount) / (learnCount + 1);
-    userWord.learnCount = userWord.spellCount + userWord.recongizeCount;
+    userWord.averageGrade =
+      (averageGrade * learnCount + grade) / (learnCount + 1);
+    userWord.learnCount = userWord.spellCount + userWord.recognizeCount;
     await userWord.save();
 
     res.send(ret);

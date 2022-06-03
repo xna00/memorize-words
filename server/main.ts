@@ -6,11 +6,13 @@ import vocabulary from "./routes/vocabulary";
 import word from "./routes/word";
 import log from "./routes/log";
 import userWord from "./routes/userWord";
+import QueryString from "qs";
 
 db();
 
 const app = express();
 app.set("secret", "jf389u3cosidufq0e3");
+app.set("query parser", (q) => QueryString.parse(q));
 app.use(express.json({ limit: "25mb" }));
 
 auth(app);

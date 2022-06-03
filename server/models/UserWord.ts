@@ -21,8 +21,8 @@ interface UserWord {
   briefExplanation?: string;
   spellAverageGrade: CreationOptional<number>;
   spellCount: CreationOptional<number>;
-  recongizeCount: CreationOptional<number>;
-  recongizeAverageGrade: CreationOptional<number>;
+  recognizeCount: CreationOptional<number>;
+  recognizeAverageGrade: CreationOptional<number>;
   learnCount: CreationOptional<number>;
   averageGrade: CreationOptional<number>;
   firstlyLearnTime?: CreationOptional<Date>;
@@ -63,11 +63,11 @@ const M = sequelize.define<UserWordModel>(
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    recongizeCount: {
+    recognizeCount: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    recongizeAverageGrade: {
+    recognizeAverageGrade: {
       type: DataTypes.FLOAT,
       defaultValue: 0,
     },

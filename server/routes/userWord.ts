@@ -14,11 +14,18 @@ export default (app: Express) => {
   type A = { count: number; rows: UserWordModel[] };
   router.get("/", async (req, res: Response<A>) => {
     const user = (req as any).user as User;
-    const { vocabulary, limit, offset, ...rest } = req.query as {
+    const {
+      vocabulary,
+      pageNum = 1,
+      pageSize = 10,
+      ...rest
+    } = req.query as {
       vocabulary?: string;
-      limit?: number;
-      offset?: number;
+      pageNum?: number;
+      pageSize?: number;
     };
+    const limit = Number(pageSize);
+    const offset = (Number(pageNum) - 1) * limit;
     console.log(rest, queryTowhere({ ...rest }));
     let resp: A;
 
@@ -46,7 +53,7 @@ export default (app: Express) => {
         }),
       },
       attributes: {
-        exclude: ["id", "userId"],
+        exclude: ["userId"],
       },
       limit,
       offset,
@@ -72,14 +79,24 @@ export default (app: Express) => {
   router.get("/:word", async (req, res) => {
     const user = (req as any).user as User;
     const { word } = req.params;
-    res.send(
-      await UserWord.findOne({
-        where: {
-          userId: user.id,
-          word: word,
-        },
-      })
-    );
+    const w = await UserWord.findOne({
+      where: {
+        userId: user.id,
+        word: word,
+      },
+    });
+    assert(w, 400);
+    const wo = await w.getWord({
+      include: {
+        model: ProtoWord,
+        as: "proto",
+      },
+    });
+
+    w.briefExplanation = wo.proto?.senses
+      ?.map((s) => s.chineseExplanation)
+      .join("；");
+    res.send(w);
   });
 
   app.use("/api/userWords", auth(), router);

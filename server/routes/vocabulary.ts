@@ -11,6 +11,7 @@ export default (app: Express) => {
   router.post(
     "/",
     async (req: Request<{}, any, { words: string[]; name: string }>, res) => {
+      req.query
       console.log(req.body);
       const { words, name } = req.body;
       console.log(words, name);

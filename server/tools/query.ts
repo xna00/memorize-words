@@ -13,7 +13,7 @@ export function queryTowhere<
         k,
         Array.isArray(v)
           ? {
-              [Op.between]: v,
+              [Op.between]: v.map(Number),
             }
           : v,
       ])
