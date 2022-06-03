@@ -11,7 +11,7 @@ export default (app: Express) => {
   router.post(
     "/",
     async (req: Request<{}, any, { words: string[]; name: string }>, res) => {
-      req.query
+      req.query;
       console.log(req.body);
       const { words, name } = req.body;
       console.log(words, name);
@@ -25,9 +25,11 @@ export default (app: Express) => {
         })
       ).map((t) => t.word);
 
+      const allWords = (await Word.findAll()).map((w) => w.word);
+
       await UserWord.bulkCreate(
         words
-          .filter((w) => !tmp.includes(w))
+          .filter((w) => !tmp.includes(w) && allWords.includes(w))
           .map((w) => ({
             userId: user.id,
             word: w,
@@ -86,6 +88,6 @@ export default (app: Express) => {
       })
     );
   });
-  
+
   app.use("/api/vocabularies", auth(), router);
 };
