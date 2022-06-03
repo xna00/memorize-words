@@ -10,11 +10,15 @@ export default () => {
         axios
           .post("/api/vocabularies", {
             ...data,
-            words: data.words
-              .toString()
-              .split(/\s/)
-              .map((w) => w.trim())
-              .filter((w) => w),
+            words: Array.from(
+              new Set(
+                data.words
+                  .toString()
+                  .split(/\s/)
+                  .map((w) => w.trim())
+                  .filter((w) => w)
+              )
+            ),
           })
           .then((res) => {
             console.log(res);
